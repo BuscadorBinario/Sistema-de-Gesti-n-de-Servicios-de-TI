@@ -1,0 +1,2199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gestión de Servicios de TI - Policía Nacional del Perú</title>
+    <style>
+        :root {
+            --primary-color: #003087;
+            --primary-dark: #001f5c;
+            --secondary-color: #4a5568;
+            --success-color: #38a169;
+            --warning-color: #ecc94b;
+            --danger-color: #e53e3e;
+            --background-color: #f0f4f8;
+            --card-background: #ffffff;
+            --text-color: #2d3748;
+            --chart-accent: #f56565;
+            --chart-secondary: #68d391;
+            --gold-accent: #d69e2e;
+            --gradient: linear-gradient(135deg, #003087 0%, #0052cc 100%);
+            --shadow: 0 10px 30px rgba(0, 48, 135, 0.12);
+            --shadow-hover: 0 20px 40px rgba(0, 48, 135, 0.2);
+            --dark-background: #0f172a;
+            --dark-card: #1e293b;
+            --dark-text: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        body.dark-mode {
+            background: var(--dark-background);
+            color: var(--dark-text);
+        }
+
+        body.dark-mode .container,
+        body.dark-mode #new-ticket-form,
+        body.dark-mode #ticket-list,
+        body.dark-mode .modal-content,
+        body.dark-mode #login-content {
+            background: var(--dark-card);
+        }
+
+        body.dark-mode nav,
+        body.dark-mode th {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        }
+
+        body.dark-mode .stats-card,
+        body.dark-mode .chart-container {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        }
+
+        body.dark-mode tr:hover {
+            background-color: #334155;
+        }
+
+        body.dark-mode input,
+        body.dark-mode select,
+        body.dark-mode textarea {
+            background-color: #334155;
+            border-color: #475569;
+            color: var(--dark-text);
+        }
+
+        body.dark-mode input:focus,
+        body.dark-mode select:focus,
+        body.dark-mode textarea:focus {
+            background-color: #475569;
+        }
+
+        /* Login Page Styles */
+        #login-page {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #003087 0%, #0052cc 50%, #003087 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #login-page::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: moveBackground 20s linear infinite;
+        }
+
+        @keyframes moveBackground {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 1;
+            margin: auto;
+            width: 100%;
+            max-width: 450px;
+            padding: 20px;
+        }
+
+        #login-content {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            padding: 50px 40px;
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-logo img {
+            width: 100px;
+            height: 100px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .login-logo h1 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-top: 20px;
+            font-weight: 700;
+        }
+
+        .login-logo p {
+            color: var(--secondary-color);
+            font-size: 0.95rem;
+            margin-top: 8px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #f7fafc;
+        }
+
+        .input-group input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 48, 135, 0.1);
+            outline: none;
+            background-color: white;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        .remember-me label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            cursor: pointer;
+        }
+
+        .login-button {
+            width: 100%;
+            padding: 16px;
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 48, 135, 0.3);
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 48, 135, 0.4);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .login-footer {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .login-footer a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .login-footer a:hover {
+            color: var(--gold-accent);
+        }
+
+        #login-error {
+            background: #fee;
+            color: var(--danger-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+            animation: shake 0.4s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        /* Main Application Styles */
+        .main-app {
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: var(--card-background);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 40px;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        header img {
+            max-width: 180px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            transition: transform 0.4s ease;
+        }
+
+        header img:hover {
+            transform: scale(1.08) rotate(3deg);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--secondary-color);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        nav {
+            background: var(--gradient);
+            padding: 20px 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            padding: 12px 20px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+        }
+
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        nav a.active {
+            background-color: var(--gold-accent);
+            color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(214, 158, 46, 0.4);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(56, 161, 105, 0.3);
+        }
+
+        button:hover {
+            background: #2f855a;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(56, 161, 105, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        #auto-add-controls {
+            margin-bottom: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        #new-ticket-form {
+            background: var(--card-background);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 32px;
+        }
+
+        #new-ticket-form h2 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            font-weight: 700;
+            padding-bottom: 16px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        #new-ticket-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem;
+        }
+
+        #new-ticket-form input,
+        #new-ticket-form select,
+        #new-ticket-form textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #f7fafc;
+        }
+
+        #new-ticket-form input:focus,
+        #new-ticket-form select:focus,
+        #new-ticket-form textarea:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 48, 135, 0.1);
+            outline: none;
+            background-color: white;
+        }
+
+        #search-input {
+            width: 100%;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #f7fafc;
+        }
+
+        #search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(0, 48, 135, 0.1);
+            outline: none;
+            background-color: white;
+        }
+
+        #ticket-list {
+            background: var(--card-background);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 32px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        th, td {
+            padding: 18px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: var(--gradient);
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+        }
+
+        th:first-child {
+            border-radius: 12px 0 0 0;
+        }
+
+        th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+        tr {
+            transition: all 0.3s;
+        }
+
+        tr:hover {
+            background-color: #f7fafc;
+            transform: translateX(4px);
+        }
+
+        .eye-button {
+            background: transparent;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            padding: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .eye-button:hover {
+            color: var(--gold-accent);
+            transform: scale(1.2);
+        }
+
+        #stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, white 0%, #f7fafc 100%);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: all 0.3s;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .stats-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stats-card h3 {
+            color: var(--primary-color);
+            margin-bottom: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stats-card p {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            transition: color 0.3s;
+        }
+
+        .stats-card:hover p {
+            color: var(--gold-accent);
+        }
+
+        #dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 28px;
+            margin-bottom: 32px;
+        }
+
+        .chart-container {
+            background: linear-gradient(135deg, white 0%, #f7fafc 100%);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s;
+        }
+
+        .chart-container:hover {
+            transform: translateY(-6px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            padding: 20px;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2% auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close {
+            color: var(--secondary-color);
+            float: right;
+            font-size: 2.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: var(--danger-color);
+            transform: rotate(90deg);
+        }
+
+        #ticket-details h2 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 2rem;
+            font-weight: 700;
+            padding-bottom: 16px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        #ticket-details p {
+            margin-bottom: 16px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        #ticket-details strong {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        #comments-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        #comments-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 16px;
+            font-size: 1.4rem;
+        }
+
+        #comments-section ul {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        #comments-section li {
+            background: #f7fafc;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        #attachment-upload {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        #attachments-list li {
+            background: #f7fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        #attachments-list a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        #attachments-list a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            color: var(--secondary-color);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        #notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: var(--success-color);
+            color: white;
+            padding: 18px 28px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(56, 161, 105, 0.4);
+            opacity: 0;
+            transition: all 0.3s;
+            transform: translateX(400px);
+            z-index: 2000;
+            font-weight: 600;
+        }
+
+        #notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        #logout-button {
+            background: var(--danger-color);
+        }
+
+        #logout-button:hover {
+            background: #c53030;
+        }
+
+        #dark-mode-toggle {
+            background: var(--secondary-color);
+        }
+
+        #dark-mode-toggle:hover {
+            background: #718096;
+        }
+
+        #export-csv {
+            background: var(--warning-color);
+            color: var(--text-color);
+        }
+
+        #export-csv:hover {
+            background: #d69e2e;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Registration Modal */
+        #registration-modal .modal-content {
+            max-width: 500px;
+        }
+
+        #registration-modal h2 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        #reg-error {
+            background: #fee;
+            color: var(--danger-color);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+            }
+
+            nav {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 20px;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            nav a {
+                text-align: center;
+            }
+
+            .button-group {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .button-group button {
+                width: 100%;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            #new-ticket-form {
+                padding: 24px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #dashboard {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 24px;
+            }
+
+            #login-content {
+                padding: 36px 28px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header img {
+                max-width: 120px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            th, td {
+                padding: 12px 8px;
+                font-size: 0.85rem;
+            }
+
+            .stats-card p {
+                font-size: 2rem;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.3/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="login-page">
+        <div class="login-container">
+            <div id="login-content">
+                <div class="login-logo">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f5/Coat_of_arms_of_the_National_Police_of_Peru.svg" alt="Logo PNP">
+                    <h1>Sistema TI - PNP</h1>
+                    <p>Gestión de Servicios de Tecnología</p>
+                </div>
+                <form onsubmit="login(event)">
+                    <div class="input-group">
+                        <label for="username">Usuario</label>
+                        <input type="text" id="username" required autocomplete="username">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" required autocomplete="current-password">
+                    </div>
+                    <div class="remember-me">
+                        <input type="checkbox" id="remember-me">
+                        <label for="remember-me">Recordarme</label>
+                    </div>
+                    <button type="submit" class="login-button">Iniciar Sesión</button>
+                    <div id="login-error" style="display: none;"></div>
+                </form>
+                <div class="login-footer">
+                    <p>¿No tienes cuenta? <a href="#" onclick="showRegistration(event)">Regístrate aquí</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="registration-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeRegistration()">&times;</span>
+            <h2>Registro de Usuario</h2>
+            <form onsubmit="register(event)">
+                <div class="input-group">
+                    <label for="reg-username">Usuario</label>
+                    <input type="text" id="reg-username" required>
+                </div>
+                <div class="input-group">
+                    <label for="reg-password">Contraseña</label>
+                    <input type="password" id="reg-password" required>
+                </div>
+                <div class="input-group">
+                    <label for="reg-confirm-password">Confirmar Contraseña</label>
+                    <input type="password" id="reg-confirm-password" required>
+                </div>
+                <button type="submit" class="login-button">Registrarse</button>
+                <div id="reg-error" style="display: none;"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="main-app hidden">
+        <div class="container">
+            <header>
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/f5/Coat_of_arms_of_the_National_Police_of_Peru.svg" alt="Logo PNP">
+                <h1>Sistema de Gestión de Servicios de TI</h1>
+                <p class="subtitle">Policía Nacional del Perú</p>
+            </header>
+
+            <nav>
+                <ul>
+                    <li><a href="#" onclick="showAll(event)" class="active">Todos los Tickets</a></li>
+                    <li><a href="#" onclick="filterCategoria(event, 'Gestión de Niveles de Servicios')">Niveles de Servicio</a></li>
+                    <li><a href="#" onclick="filterCategoria(event, 'Gestión de Solicitudes de Servicio')">Solicitudes</a></li>
+                    <li><a href="#" onclick="filterCategoria(event, 'Gestión de Despliegue')">Despliegue</a></li>
+                    <li><a href="#" onclick="filterCategoria(event, 'Gestión de Plataforma e Infraestructura')">Infraestructura</a></li>
+                    <li><a href="#" onclick="filterCategoria(event, 'Gestión y Desarrollo de Software')">Desarrollo</a></li>
+                    <li><a href="#" onclick="filterCategoria(event, 'Pruebas y Validación del Servicio')">Pruebas</a></li>
+                </ul>
+                <div class="button-group">
+                    <button onclick="agregarTicketAutomatico()">➕ Agregar Ticket</button>
+                    <button onclick="generarInforme()">📄 Generar PDF</button>
+                    <button id="export-csv" onclick="exportToCSV()">📊 Exportar CSV</button>
+                    <button id="dark-mode-toggle" onclick="toggleDarkMode()">🌙 Modo Oscuro</button>
+                    <button id="logout-button" onclick="logout()">🚪 Cerrar Sesión</button>
+                </div>
+            </nav>
+
+            <div id="auto-add-controls">
+                <button id="start-auto-add" onclick="startAutoAdd()">▶️ Auto Agregar (10s)</button>
+                <button id="stop-auto-add" onclick="stopAutoAdd()" style="display: none;">⏹️ Detener Auto</button>
+            </div>
+
+            <div id="new-ticket-form">
+                <h2>✨ Crear Nuevo Ticket</h2>
+                <div class="form-grid">
+                    <div>
+                        <label for="titulo">Título *</label>
+                        <input type="text" id="titulo" required placeholder="Ingrese el título del ticket">
+                    </div>
+                    <div>
+                        <label for="categoria">Categoría *</label>
+                        <select id="categoria" required>
+                            <option value="">Seleccione una categoría</option>
+                            <option value="Gestión de Niveles de Servicios">Gestión de Niveles de Servicios</option>
+                            <option value="Gestión de Solicitudes de Servicio">Gestión de Solicitudes de Servicio</option>
+                            <option value="Gestión de Despliegue">Gestión de Despliegue</option>
+                            <option value="Gestión de Plataforma e Infraestructura">Gestión de Plataforma e Infraestructura</option>
+                            <option value="Gestión y Desarrollo de Software">Gestión y Desarrollo de Software</option>
+                            <option value="Pruebas y Validación del Servicio">Pruebas y Validación del Servicio</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="estado">Estado *</label>
+                        <select id="estado" required>
+                            <option value="">Seleccione estado</option>
+                            <option value="Abierto">Abierto</option>
+                            <option value="En Progreso">En Progreso</option>
+                            <option value="Cerrado">Cerrado</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="prioridad">Prioridad *</label>
+                        <select id="prioridad" required>
+                            <option value="">Seleccione prioridad</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Media">Media</option>
+                            <option value="Baja">Baja</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="impacto">Impacto *</label>
+                        <select id="impacto" required>
+                            <option value="">Seleccione impacto</option>
+                            <option value="Alto">Alto</option>
+                            <option value="Medio">Medio</option>
+                            <option value="Bajo">Bajo</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="urgencia">Urgencia *</label>
+                        <select id="urgencia" required>
+                            <option value="">Seleccione urgencia</option>
+                            <option value="Alta">Alta</option>
+                            <option value="Media">Media</option>
+                            <option value="Baja">Baja</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="asignado_a">Asignado a Puesto *</label>
+                        <select id="asignado_a" required>
+                            <option value="">Seleccione puesto</option>
+                            <option value="General de Policía">General de Policía</option>
+                            <option value="Teniente General">Teniente General</option>
+                            <option value="Mayor General">Mayor General</option>
+                            <option value="Coronel">Coronel</option>
+                            <option value="Comandante">Comandante</option>
+                            <option value="Mayor">Mayor</option>
+                            <option value="Capitán">Capitán</option>
+                            <option value="Teniente">Teniente</option>
+                            <option value="Alférez">Alférez</option>
+                            <option value="Suboficial Superior">Suboficial Superior</option>
+                            <option value="Suboficial Brigadier">Suboficial Brigadier</option>
+                            <option value="Sargento Primero">Sargento Primero</option>
+                            <option value="Sargento Segundo">Sargento Segundo</option>
+                            <option value="Suboficial Tercero">Suboficial Tercero</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="reportado_por">Reportado por Puesto *</label>
+                        <select id="reportado_por" required>
+                            <option value="">Seleccione puesto</option>
+                            <option value="General de Policía">General de Policía</option>
+                            <option value="Teniente General">Teniente General</option>
+                            <option value="Mayor General">Mayor General</option>
+                            <option value="Coronel">Coronel</option>
+                            <option value="Comandante">Comandante</option>
+                            <option value="Mayor">Mayor</option>
+                            <option value="Capitán">Capitán</option>
+                            <option value="Teniente">Teniente</option>
+                            <option value="Alférez">Alférez</option>
+                            <option value="Suboficial Superior">Suboficial Superior</option>
+                            <option value="Suboficial Brigadier">Suboficial Brigadier</option>
+                            <option value="Sargento Primero">Sargento Primero</option>
+                            <option value="Sargento Segundo">Sargento Segundo</option>
+                            <option value="Suboficial Tercero">Suboficial Tercero</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="departamento">Departamento *</label>
+                        <select id="departamento" required>
+                            <option value="">Seleccione departamento</option>
+                            <option value="Dirección General">Dirección General</option>
+                            <option value="Dirección de Investigación Criminal">Dirección de Investigación Criminal</option>
+                            <option value="Dirección de Tránsito y Seguridad Vial">Dirección de Tránsito y Seguridad Vial</option>
+                            <option value="Dirección de Inteligencia">Dirección de Inteligencia</option>
+                            <option value="Dirección Antidrogas">Dirección Antidrogas</option>
+                            <option value="Dirección de Aviación Policial">Dirección de Aviación Policial</option>
+                            <option value="Dirección de Educación">Dirección de Educación</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="due_date">Fecha de Vencimiento</label>
+                        <input type="date" id="due_date">
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <label for="descripcion">Descripción *</label>
+                    <textarea id="descripcion" required rows="3" placeholder="Describa el problema o solicitud..."></textarea>
+                </div>
+                <div style="margin-top: 20px;">
+                    <label for="notas">Notas Adicionales</label>
+                    <textarea id="notas" rows="3" placeholder="Información adicional relevante..."></textarea>
+                </div>
+                <button onclick="crearTicketPersonalizado()" style="margin-top: 24px; width: 100%; padding: 16px; font-size: 1.1rem;">
+                    ✅ Crear Ticket
+                </button>
+            </div>
+
+            <input type="text" id="search-input" placeholder="🔍 Buscar tickets por título o ID...">
+
+            <div id="ticket-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Categoría</th>
+                            <th>Estado</th>
+                            <th>Prioridad</th>
+                            <th>Impacto</th>
+                            <th>Urgencia</th>
+                            <th>Asignado a</th>
+                            <th>Reportado por</th>
+                            <th>Departamento</th>
+                            <th>Vencimiento</th>
+                            <th>Ver</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ticket-body"></tbody>
+                </table>
+            </div>
+
+            <div id="stats">
+                <div class="stats-card">
+                    <h3>Total Tickets</h3>
+                    <p id="total-tickets">0</p>
+                </div>
+                <div class="stats-card">
+                    <h3>Abiertos</h3>
+                    <p id="open-tickets">0</p>
+                </div>
+                <div class="stats-card">
+                    <h3>En Progreso</h3>
+                    <p id="progress-tickets">0</p>
+                </div>
+                <div class="stats-card">
+                    <h3>Cerrados</h3>
+                    <p id="closed-tickets">0</p>
+                </div>
+                <div class="stats-card">
+                    <h3>Tiempo Promedio</h3>
+                    <p id="avg-resolution">N/A</p>
+                </div>
+            </div>
+
+            <div id="dashboard">
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="statusChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="priorityChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="puestoChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="avgResolutionCategoryChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="ticketsOverTimeChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="resolutionDistributionChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="priorityByStatusChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="impactChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="urgencyChart"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="departmentChart"></canvas>
+                </div>
+            </div>
+
+            <div id="modal" class="modal">
+                <div class="modal-content">
+                    <span class="close" onclick="cerrarModal()">&times;</span>
+                    <div id="ticket-details"></div>
+                    <div id="comments-section">
+                        <h3>💬 Comentarios</h3>
+                        <ul id="comments-list"></ul>
+                        <textarea id="new-comment" placeholder="Agregar un comentario..." rows="3"></textarea>
+                        <button id="add-comment-button" onclick="addComment()" style="margin-top: 12px;">
+                            ➕ Agregar Comentario
+                        </button>
+                    </div>
+                    <div id="attachment-upload">
+                        <h3>📎 Archivos Adjuntos</h3>
+                        <input type="file" id="attachment" style="margin: 12px 0;">
+                        <button onclick="uploadAttachment()">📤 Subir Archivo</button>
+                        <ul id="attachments-list"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="notification"></div>
+
+            <footer>
+                <p>© 2025 Policía Nacional del Perú - Sistema de Gestión de Servicios de TI</p>
+                <p style="margin-top: 8px; font-size: 0.85rem;">Desarrollado con tecnología de vanguardia para la excelencia operacional</p>
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        let tickets = [];
+        let categoryChart, statusChart, priorityChart, puestoChart;
+        let avgResolutionCategoryChart, ticketsOverTimeChart, resolutionDistributionChart;
+        let priorityByStatusChart, impactChart, urgencyChart, departmentChart;
+        let autoAddInterval;
+        let currentTicketId = null;
+
+        const categorias = [
+            'Gestión de Niveles de Servicios',
+            'Gestión de Solicitudes de Servicio',
+            'Gestión de Despliegue',
+            'Gestión de Plataforma e Infraestructura',
+            'Gestión y Desarrollo de Software',
+            'Pruebas y Validación del Servicio'
+        ];
+        const estados = ['Abierto', 'En Progreso', 'Cerrado'];
+        const prioridades = ['Alta', 'Media', 'Baja'];
+        const impactos = ['Alto', 'Medio', 'Bajo'];
+        const urgencias = ['Alta', 'Media', 'Baja'];
+        const puestosPNP = [
+            'General de Policía', 'Teniente General', 'Mayor General',
+            'Coronel', 'Comandante', 'Mayor', 'Capitán', 'Teniente',
+            'Alférez', 'Suboficial Superior', 'Suboficial Brigadier',
+            'Sargento Primero', 'Sargento Segundo', 'Suboficial Tercero'
+        ];
+        const departamentos = [
+            'Dirección General', 'Dirección de Investigación Criminal',
+            'Dirección de Tránsito y Seguridad Vial', 'Dirección de Inteligencia',
+            'Dirección Antidrogas', 'Dirección de Aviación Policial',
+            'Dirección de Educación'
+        ];
+
+        function getUsers() {
+            return JSON.parse(localStorage.getItem('users')) || [
+                { username: 'admin', password: 'admin123' },
+                { username: 'user', password: 'user123' }
+            ];
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        function checkLogin() {
+            const loggedIn = localStorage.getItem('loggedIn');
+            if (loggedIn) {
+                document.getElementById('login-page').classList.add('hidden');
+                document.querySelector('.main-app').classList.remove('hidden');
+                const darkMode = localStorage.getItem('darkMode') === 'true';
+                if (darkMode) {
+                    document.body.classList.add('dark-mode');
+                }
+            } else {
+                document.getElementById('login-page').classList.remove('hidden');
+                document.querySelector('.main-app').classList.add('hidden');
+            }
+        }
+
+        function login(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+            const users = getUsers();
+            const user = users.find(u => u.username === username && u.password === password);
+            
+            if (user) {
+                localStorage.setItem('loggedIn', 'true');
+                if (rememberMe) {
+                    localStorage.setItem('username', username);
+                }
+                checkLogin();
+                showNotification('✅ Inicio de sesión exitoso');
+                inicializar();
+            } else {
+                const errorEl = document.getElementById('login-error');
+                errorEl.textContent = '❌ Usuario o contraseña incorrectos';
+                errorEl.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            checkLogin();
+            showNotification('👋 Sesión cerrada exitosamente');
+            window.location.reload();
+        }
+
+        function showRegistration(e) {
+            e.preventDefault();
+            document.getElementById('registration-modal').style.display = 'block';
+        }
+
+        function closeRegistration() {
+            document.getElementById('registration-modal').style.display = 'none';
+        }
+
+        function register(e) {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value;
+            const password = document.getElementById('reg-password').value;
+            const confirmPassword = document.getElementById('reg-confirm-password').value;
+            const users = getUsers();
+            
+            const errorEl = document.getElementById('reg-error');
+            
+            if (users.find(u => u.username === username)) {
+                errorEl.textContent = '❌ El usuario ya existe';
+                errorEl.style.display = 'block';
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                errorEl.textContent = '❌ Las contraseñas no coinciden';
+                errorEl.style.display = 'block';
+                return;
+            }
+            
+            users.push({ username, password });
+            saveUsers(users);
+            closeRegistration();
+            showNotification('✅ Registro exitoso. Por favor inicie sesión');
+        }
+
+        function inicializar() {
+            agregarTicket('Problema con SLA', 'Descripción de incumplimiento de nivel de servicio.', 'Gestión de Niveles de Servicios', 'Abierto', 'Alta', 'Alto', 'Alta', 'General de Policía', 'Teniente General', 'Dirección General', 'Notas iniciales sobre SLA.', new Date(Date.now() + 86400000).toISOString().split('T')[0]);
+            agregarTicket('Solicitud de nuevo usuario', 'Crear cuenta para nuevo empleado.', 'Gestión de Solicitudes de Servicio', 'En Progreso', 'Media', 'Medio', 'Media', 'Teniente General', 'Coronel', 'Dirección de Investigación Criminal', 'Solicitud urgente.', new Date(Date.now() + 172800000).toISOString().split('T')[0]);
+            agregarTicket('Despliegue de actualización', 'Actualizar servidor web.', 'Gestión de Despliegue', 'Cerrado', 'Baja', 'Bajo', 'Baja', 'Coronel', 'Comandante', 'Dirección de Tránsito y Seguridad Vial', 'Actualización completada.', new Date(Date.now() - 86400000).toISOString().split('T')[0]);
+            agregarTicket('Mantenimiento de infraestructura', 'Revisar red de datos.', 'Gestión de Plataforma e Infraestructura', 'Abierto', 'Alta', 'Alto', 'Alta', 'Comandante', 'Mayor', 'Dirección de Inteligencia', 'Mantenimiento programado.', new Date(Date.now() + 259200000).toISOString().split('T')[0]);
+            agregarTicket('Desarrollo de nueva feature', 'Agregar módulo de autenticación.', 'Gestión y Desarrollo de Software', 'En Progreso', 'Media', 'Medio', 'Media', 'Mayor', 'Capitán', 'Dirección Antidrogas', 'Feature en desarrollo.', new Date(Date.now() + 345600000).toISOString().split('T')[0]);
+            
+            mostrarTickets();
+            actualizarGraficos();
+            actualizarStats();
+        }
+
+        function agregarTicket(titulo, descripcion, categoria, estado, prioridad, impacto, urgencia, asignado_a, reportado_por, departamento, notas, due_date = null) {
+            const id = tickets.length + 1;
+            const created_at = new Date();
+            const fecha = created_at.toLocaleString('es-ES');
+            let closed_at = null;
+            
+            if (estado === 'Cerrado') {
+                closed_at = new Date(created_at.getTime() + Math.random() * 86400000 * 7);
+            }
+            
+            const resolution_time = closed_at ? 
+                Math.round((closed_at - created_at) / 3600000) + ' horas' : 'N/A';
+            
+            tickets.push({
+                id, titulo, descripcion, categoria, estado, prioridad, impacto,
+                urgencia, asignado_a, reportado_por, departamento, notas, fecha,
+                created_at, closed_at, resolution_time, due_date,
+                comments: [], attachments: []
+            });
+            
+            showNotification('✅ Ticket agregado exitosamente');
+        }
+
+        function agregarTicketAutomatico() {
+            const randomCat = categorias[Math.floor(Math.random() * categorias.length)];
+            const randomEst = estados[Math.floor(Math.random() * estados.length)];
+            const randomPri = prioridades[Math.floor(Math.random() * prioridades.length)];
+            const randomImp = impactos[Math.floor(Math.random() * impactos.length)];
+            const randomUrg = urgencias[Math.floor(Math.random() * urgencias.length)];
+            const randomPuesto = puestosPNP[Math.floor(Math.random() * puestosPNP.length)];
+            const randomReporter = puestosPNP[Math.floor(Math.random() * puestosPNP.length)];
+            const randomDept = departamentos[Math.floor(Math.random() * departamentos.length)];
+            
+            const titulo = generateTitleBasedOnCategory(randomCat);
+            agregarTicket(titulo, `Descripción para ${titulo}.`, randomCat, randomEst, randomPri, randomImp, randomUrg, randomPuesto, randomReporter, randomDept, `Notas para ${titulo}.`, new Date(Date.now() + Math.random() * 604800000).toISOString().split('T')[0]);
+            
+            mostrarTickets();
+            actualizarGraficos();
+            actualizarStats();
+        }
+
+        function generateTitleBasedOnCategory(categoria) {
+            const titles = {
+                'Gestión de Niveles de Servicios': ['Incumplimiento de SLA', 'Monitoreo de rendimiento', 'Revisión de acuerdos'],
+                'Gestión de Solicitudes de Servicio': ['Solicitud de acceso', 'Cambio de contraseña', 'Requerimiento de equipo'],
+                'Gestión de Despliegue': ['Despliegue de versión', 'Actualización de software', 'Instalación de hardware'],
+                'Gestión de Plataforma e Infraestructura': ['Mantenimiento de servidor', 'Problema de red', 'Fallo en almacenamiento'],
+                'Gestión y Desarrollo de Software': ['Nueva funcionalidad', 'Corrección de bug', 'Optimización de código'],
+                'Pruebas y Validación del Servicio': ['Pruebas de integración', 'Validación de seguridad', 'Test de rendimiento']
+            };
+            return titles[categoria][Math.floor(Math.random() * titles[categoria].length)];
+        }
+
+        function startAutoAdd() {
+            if (!autoAddInterval) {
+                autoAddInterval = setInterval(agregarTicketAutomatico, 10000);
+                document.getElementById('start-auto-add').style.display = 'none';
+                document.getElementById('stop-auto-add').style.display = 'inline-block';
+                showNotification('▶️ Auto agregar activado');
+            }
+        }
+
+        function stopAutoAdd() {
+            if (autoAddInterval) {
+                clearInterval(autoAddInterval);
+                autoAddInterval = null;
+                document.getElementById('start-auto-add').style.display = 'inline-block';
+                document.getElementById('stop-auto-add').style.display = 'none';
+                showNotification('⏹️ Auto agregar desactivado');
+            }
+        }
+
+        function crearTicketPersonalizado() {
+            const titulo = document.getElementById('titulo').value;
+            const descripcion = document.getElementById('descripcion').value;
+            const categoria = document.getElementById('categoria').value;
+            const estado = document.getElementById('estado').value;
+            const prioridad = document.getElementById('prioridad').value;
+            const impacto = document.getElementById('impacto').value;
+            const urgencia = document.getElementById('urgencia').value;
+            const asignado_a = document.getElementById('asignado_a').value;
+            const reportado_por = document.getElementById('reportado_por').value;
+            const departamento = document.getElementById('departamento').value;
+            const due_date = document.getElementById('due_date').value;
+            const notas = document.getElementById('notas').value;
+            
+            if (titulo && descripcion && categoria && estado && prioridad && impacto && urgencia && asignado_a && reportado_por && departamento) {
+                agregarTicket(titulo, descripcion, categoria, estado, prioridad, impacto, urgencia, asignado_a, reportado_por, departamento, notas, due_date);
+                mostrarTickets();
+                actualizarGraficos();
+                actualizarStats();
+                
+                document.getElementById('titulo').value = '';
+                document.getElementById('descripcion').value = '';
+                document.getElementById('categoria').value = '';
+                document.getElementById('estado').value = '';
+                document.getElementById('prioridad').value = '';
+                document.getElementById('impacto').value = '';
+                document.getElementById('urgencia').value = '';
+                document.getElementById('asignado_a').value = '';
+                document.getElementById('reportado_por').value = '';
+                document.getElementById('departamento').value = '';
+                document.getElementById('due_date').value = '';
+                document.getElementById('notas').value = '';
+            } else {
+                showNotification('⚠️ Complete todos los campos obligatorios');
+            }
+        }
+
+        function buscarTickets() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const ticketsFiltrados = tickets.filter(t => 
+                t.titulo.toLowerCase().includes(searchTerm) || 
+                t.id.toString().includes(searchTerm)
+            );
+            renderTickets(ticketsFiltrados);
+        }
+
+        function mostrarTickets(filtro = null) {
+            const ticketsFiltrados = filtro ? 
+                tickets.filter(t => t.categoria === filtro) : tickets;
+            renderTickets(ticketsFiltrados);
+        }
+
+        function renderTickets(ticketsArray) {
+            let html = '';
+            ticketsArray.forEach(t => {
+                html += `<tr>
+                    <td><strong>#${t.id}</strong></td>
+                    <td>${t.titulo}</td>
+                    <td>${t.categoria}</td>
+                    <td>${t.estado}</td>
+                    <td>${t.prioridad}</td>
+                    <td>${t.impacto}</td>
+                    <td>${t.urgencia}</td>
+                    <td>${t.asignado_a}</td>
+                    <td>${t.reportado_por}</td>
+                    <td>${t.departamento}</td>
+                    <td>${t.due_date || 'N/A'}</td>
+                    <td><button class="eye-button" onclick="verTicket(${t.id})">👁️</button></td>
+                </tr>`;
+            });
+            document.getElementById('ticket-body').innerHTML = html;
+        }
+
+        function showAll(e) {
+            if (e) e.preventDefault();
+            mostrarTickets();
+            setActiveNav(null);
+        }
+
+        function filterCategoria(e, categoria) {
+            if (e) e.preventDefault();
+            mostrarTickets(categoria);
+            setActiveNav(categoria);
+        }
+
+        function setActiveNav(filtro) {
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+            if (filtro) {
+                const link = Array.from(document.querySelectorAll('nav a')).find(a => 
+                    a.textContent.includes(filtro.split(' ')[2]) || 
+                    a.onclick?.toString().includes(filtro)
+                );
+                if (link) link.classList.add('active');
+            } else {
+                document.querySelector('nav a[onclick*="showAll"]').classList.add('active');
+            }
+        }
+
+        function verTicket(id) {
+            const ticket = tickets.find(t => t.id === id);
+            if (!ticket) return;
+            
+            currentTicketId = id;
+            const closeButton = ticket.estado !== 'Cerrado' ? 
+                `<button onclick="cerrarTicket(${ticket.id})" style="background: var(--danger-color); margin-top: 20px;">🔒 Cerrar Ticket</button>` : '';
+            
+            let commentsHtml = '';
+            ticket.comments.forEach(c => {
+                commentsHtml += `<li>💬 ${c}</li>`;
+            });
+            
+            let attachmentsHtml = '';
+            ticket.attachments.forEach(a => {
+                attachmentsHtml += `<li>📎 <a href="${a.url}" target="_blank">${a.name}</a></li>`;
+            });
+            
+            document.getElementById('ticket-details').innerHTML = `
+                <h2>Ticket #${ticket.id}: ${ticket.titulo}</h2>
+                <p><strong>📝 Descripción:</strong> ${ticket.descripcion}</p>
+                <p><strong>📂 Categoría:</strong> ${ticket.categoria}</p>
+                <p><strong>📊 Estado:</strong> ${ticket.estado}</p>
+                <p><strong>🔥 Prioridad:</strong> ${ticket.prioridad}</p>
+                <p><strong>⚡ Impacto:</strong> ${ticket.impacto}</p>
+                <p><strong>⏰ Urgencia:</strong> ${ticket.urgencia}</p>
+                <p><strong>👤 Asignado a:</strong> ${ticket.asignado_a}</p>
+                <p><strong>📢 Reportado por:</strong> ${ticket.reportado_por}</p>
+                <p><strong>🏢 Departamento:</strong> ${ticket.departamento}</p>
+                <p><strong>📋 Notas:</strong> ${ticket.notas || 'N/A'}</p>
+                <p><strong>📅 Fecha de Creación:</strong> ${ticket.fecha}</p>
+                <p><strong>⏳ Fecha de Vencimiento:</strong> ${ticket.due_date || 'N/A'}</p>
+                <p><strong>⏱️ Tiempo de Resolución:</strong> ${ticket.resolution_time}</p>
+                ${closeButton}
+            `;
+            
+            document.getElementById('comments-list').innerHTML = commentsHtml;
+            document.getElementById('attachments-list').innerHTML = attachmentsHtml;
+            document.getElementById('new-comment').value = '';
+            document.getElementById('attachment').value = '';
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function addComment() {
+            const comment = document.getElementById('new-comment').value;
+            if (comment && currentTicketId) {
+                const ticket = tickets.find(t => t.id === currentTicketId);
+                if (ticket) {
+                    ticket.comments.push(comment);
+                    verTicket(currentTicketId);
+                    showNotification('💬 Comentario agregado');
+                }
+            }
+        }
+
+        function uploadAttachment() {
+            const fileInput = document.getElementById('attachment');
+            if (fileInput.files.length > 0 && currentTicketId) {
+                const file = fileInput.files[0];
+                const url = URL.createObjectURL(file);
+                const ticket = tickets.find(t => t.id === currentTicketId);
+                if (ticket) {
+                    ticket.attachments.push({ name: file.name, url });
+                    verTicket(currentTicketId);
+                    showNotification('📎 Archivo adjuntado');
+                }
+            }
+        }
+
+        function cerrarTicket(id) {
+            const ticket = tickets.find(t => t.id === id);
+            if (ticket && ticket.estado !== 'Cerrado') {
+                ticket.estado = 'Cerrado';
+                ticket.closed_at = new Date();
+                ticket.resolution_time = Math.round((ticket.closed_at - ticket.created_at) / 3600000) + ' horas';
+                cerrarModal();
+                mostrarTickets();
+                actualizarGraficos();
+                actualizarStats();
+                showNotification('🔒 Ticket cerrado exitosamente');
+            }
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => notification.classList.remove('show'), 3000);
+        }
+
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDark);
+            actualizarGraficos();
+            showNotification(isDark ? '🌙 Modo oscuro activado' : '☀️ Modo claro activado');
+        }
+
+        function exportToCSV() {
+            let csv = 'ID,Título,Descripción,Categoría,Estado,Prioridad,Impacto,Urgencia,Asignado a,Reportado por,Departamento,Notas,Fecha,Vencimiento,Tiempo de Resolución\n';
+            tickets.forEach(t => {
+                csv += `${t.id},"${t.titulo.replace(/"/g, '""')}","${t.descripcion.replace(/"/g, '""')}",${t.categoria},${t.estado},${t.prioridad},${t.impacto},${t.urgencia},${t.asignado_a},${t.reportado_por},${t.departamento},"${t.notas ? t.notas.replace(/"/g, '""') : 'N/A'}",${t.fecha},${t.due_date || 'N/A'},${t.resolution_time}\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `tickets_pnp_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            showNotification('📊 Exportado a CSV exitosamente');
+        }
+
+        function actualizarStats() {
+            const conteoEstados = { Abierto: 0, 'En Progreso': 0, Cerrado: 0 };
+            let totalResolutionTime = 0;
+            let closedTickets = 0;
+            
+            tickets.forEach(t => {
+                conteoEstados[t.estado]++;
+                if (t.closed_at) {
+                    closedTickets++;
+                    totalResolutionTime += (t.closed_at - t.created_at) / 3600000;
+                }
+            });
+            
+            const avgResolutionTime = closedTickets > 0 ? 
+                (totalResolutionTime / closedTickets).toFixed(1) + 'h' : 'N/A';
+
+            document.getElementById('total-tickets').textContent = tickets.length;
+            document.getElementById('open-tickets').textContent = conteoEstados['Abierto'];
+            document.getElementById('progress-tickets').textContent = conteoEstados['En Progreso'];
+            document.getElementById('closed-tickets').textContent = conteoEstados['Cerrado'];
+            document.getElementById('avg-resolution').textContent = avgResolutionTime;
+        }
+
+        function actualizarGraficos() {
+            const isDark = document.body.classList.contains('dark-mode');
+            const textColor = isDark ? '#e2e8f0' : '#2d3748';
+            const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
+            
+            const conteoCategorias = {};
+            const conteoEstados = {};
+            const conteoPrioridades = {};
+            const conteoImpactos = {};
+            const conteoUrgencias = {};
+            const conteoPuestos = {};
+            const conteoDepartamentos = {};
+            const avgResolutionByCat = {};
+            const ticketsByDay = {};
+            const resolutionBins = { '0-1': 0, '1-5': 0, '5-10': 0, '10+': 0 };
+            const priorityByStatus = {};
+            
+            categorias.forEach(cat => { conteoCategorias[cat] = 0; avgResolutionByCat[cat] = { total: 0, count: 0 }; });
+            estados.forEach(est => { conteoEstados[est] = 0; priorityByStatus[est] = {}; });
+            prioridades.forEach(pri => { conteoPrioridades[pri] = 0; estados.forEach(est => priorityByStatus[est][pri] = 0); });
+            impactos.forEach(imp => conteoImpactos[imp] = 0);
+            urgencias.forEach(urg => conteoUrgencias[urg] = 0);
+            puestosPNP.forEach(pue => conteoPuestos[pue] = 0);
+            departamentos.forEach(dept => conteoDepartamentos[dept] = 0);
+
+            tickets.forEach(t => {
+                conteoCategorias[t.categoria]++;
+                conteoEstados[t.estado]++;
+                conteoPrioridades[t.prioridad]++;
+                conteoImpactos[t.impacto]++;
+                conteoUrgencias[t.urgencia]++;
+                conteoPuestos[t.asignado_a]++;
+                conteoDepartamentos[t.departamento]++;
+                priorityByStatus[t.estado][t.prioridad]++;
+
+                const dayKey = t.created_at.toISOString().split('T')[0];
+                ticketsByDay[dayKey] = (ticketsByDay[dayKey] || 0) + 1;
+
+                if (t.closed_at) {
+                    const resHours = (t.closed_at - t.created_at) / 3600000;
+                    avgResolutionByCat[t.categoria].total += resHours;
+                    avgResolutionByCat[t.categoria].count++;
+                    
+                    if (resHours <= 1) resolutionBins['0-1']++;
+                    else if (resHours <= 5) resolutionBins['1-5']++;
+                    else if (resHours <= 10) resolutionBins['5-10']++;
+                    else resolutionBins['10+']++;
+                }
+            });
+
+            const avgResData = categorias.map(cat => {
+                const data = avgResolutionByCat[cat];
+                return data.count > 0 ? (data.total / data.count).toFixed(1) : 0;
+            });
+
+            const chartColors = [
+                '#003087', '#38a169', '#f56565', '#68d391', '#d69e2e',
+                '#805ad5', '#ed8936', '#4299e1', '#48bb78', '#ed64a6',
+                '#a0aec0', '#9f7aea', '#38b2ac', '#f6ad55'
+            ];
+
+            const chartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: textColor, font: { family: 'Inter', size: 12 } }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.85)',
+                        titleFont: { family: 'Inter', size: 14 },
+                        bodyFont: { family: 'Inter', size: 12 },
+                        padding: 12
+                    }
+                }
+            };
+
+            if (categoryChart) categoryChart.destroy();
+            categoryChart = new Chart(document.getElementById('categoryChart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(conteoCategorias),
+                    datasets: [{
+                        data: Object.values(conteoCategorias),
+                        backgroundColor: chartColors,
+                        borderWidth: 2,
+                        borderColor: isDark ? '#1e293b' : '#ffffff'
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '📊 Tickets por Categoría',
+                            color: textColor,
+                            font: { family: 'Inter', size: 16, weight: '700' },
+                            padding: { bottom: 20 }
+                        },
+                        legend: { position: 'bottom', labels: { ...chartOptions.plugins.legend.labels, padding: 12 } }
+                    }
+                }
+            });
+
+            if (statusChart) statusChart.destroy();
+            statusChart = new Chart(document.getElementById('statusChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(conteoEstados),
+                    datasets: [{
+                        label: 'Cantidad',
+                        data: Object.values(conteoEstados),
+                        backgroundColor: ['#38a169', '#ecc94b', '#e53e3e'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '📈 Estado de Tickets',
+                            color: textColor,
+                            font: { family: 'Inter', size: 16, weight: '700' }
+                        },
+                        legend: { display: false },
+                        datalabels: {
+                            anchor: 'end',
+                            align: 'top',
+                            color: textColor,
+                            font: { size: 14, weight: '700' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor, font: { family: 'Inter' } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor, font: { family: 'Inter' } }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+
+            if (priorityChart) priorityChart.destroy();
+            priorityChart = new Chart(document.getElementById('priorityChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(conteoPrioridades),
+                    datasets: [{
+                        data: Object.values(conteoPrioridades),
+                        backgroundColor: ['#e53e3e', '#ecc94b', '#38a169'],
+                        borderWidth: 2,
+                        borderColor: isDark ? '#1e293b' : '#ffffff'
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '🔥 Tickets por Prioridad',
+                            color: textColor,
+                            font: { family: 'Inter', size: 16, weight: '700' }
+                        },
+                        legend: { position: 'bottom', labels: { ...chartOptions.plugins.legend.labels, padding: 12 } }
+                    }
+                }
+            });
+
+            if (puestoChart) puestoChart.destroy();
+            puestoChart = new Chart(document.getElementById('puestoChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(conteoPuestos),
+                    datasets: [{
+                        label: 'Tickets',
+                        data: Object.values(conteoPuestos),
+                        backgroundColor: chartColors,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    indexAxis: 'y',
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '👤 Tickets por Puesto',
+                            color: textColor,
+                            font: { family: 'Inter', size: 16, weight: '700' }
+                        },
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { color: textColor, font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            if (avgResolutionCategoryChart) avgResolutionCategoryChart.destroy();
+            avgResolutionCategoryChart = new Chart(document.getElementById('avgResolutionCategoryChart'), {
+                type: 'bar',
+                data: {
+                    labels: categorias,
+                    datasets: [{
+                        label: 'Horas Promedio',
+                        data: avgResData,
+                        backgroundColor: chartColors,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '⏱️ Tiempo Promedio de Resolución',
+                            color: textColor,
+                            font: { family: 'Inter', size: 16, weight: '700' }
+                        },
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor, font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+
+            const sortedDays = Object.keys(ticketsByDay).sort();
+            const dayData = sortedDays.map(day => ticketsByDay[day]);
+
+            if (ticketsOverTimeChart) ticketsOverTimeChart.destroy();
+            ticketsOverTimeChart = new Chart(document.getElementById('ticketsOverTimeChart'), {
+                type: 'line',
+                data: {
+                    labels: sortedDays,
+                    datasets: [{
+                        label: 'Tickets Creados',
+                        data: dayData,
+                        borderColor: '#003087',
+                        backgroundColor: 'rgba(0, 48, 135, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 3
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '📅 Tickets en el Tiempo',
+                            color: textColor,
+                            font: { family: 'Inter', size: 16, weight: '700' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor, maxRotation: 45 }
+                        }
+                    }
+                }
+            });
+
+            if (resolutionDistributionChart) resolutionDistributionChart.destroy();
+            resolutionDistributionChart = new Chart(document.getElementById('resolutionDistributionChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(resolutionBins),
+                    datasets: [{
+                        label: 'Cantidad',
+                        data: Object.values(resolutionBins),
+                        backgroundColor: chartColors.slice(0, 4),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '⏲️ Distribución de Resolución (horas)',
+                            color: textColor,
+                            font: { family: 'Inter', size: 16, weight: '700' }
+                        },
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor }
+                        }
+                    }
+                }
+            });
+
+            if (priorityByStatusChart) priorityByStatusChart.destroy();
+            priorityByStatusChart = new Chart(document.getElementById('priorityByStatusChart'), {
+                type: 'bar',
+                data: {
+                    labels: estados,
+                    datasets: prioridades.map((pri, idx) => ({
+                        label: pri,
+                        data: estados.map(est => priorityByStatus[est][pri]),
+                        backgroundColor: chartColors[idx]
+                    }))
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '📊 Prioridad vs Estado',
+                            color: textColor,
+                            font: { family: 'Inter', size: 16, weight: '700' }
+                        }
+                    },
+                    scales: {
+                        x: { stacked: true, grid: { display: false }, ticks: { color: textColor } },
+                        y: { stacked: true, beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } }
+                    }
+                }
+            });
+
+            if (impactChart) impactChart.destroy();
+            impactChart = new Chart(document.getElementById('impactChart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(conteoImpactos),
+                    datasets: [{
+                        data: Object.values(conteoImpactos),
+                        backgroundColor: ['#e53e3e', '#ecc94b', '#38a169'],
+                        borderWidth: 2,
+                        borderColor: isDark ? '#1e293b' : '#ffffff'
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '⚡ Tickets por Impacto',
+                            color: textColor,
+                            font: { family: 'Inter', size: 16, weight: '700' }
+                        },
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            if (urgencyChart) urgencyChart.destroy();
+            urgencyChart = new Chart(document.getElementById('urgencyChart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(conteoUrgencias),
+                    datasets: [{
+                        data: Object.values(conteoUrgencias),
+                        backgroundColor: ['#e53e3e', '#ecc94b', '#38a169'],
+                        borderWidth: 2,
+                        borderColor: isDark ? '#1e293b' : '#ffffff'
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '⏰ Tickets por Urgencia',
+                            color: textColor,
+                            font: { family: 'Inter', size: 16, weight: '700' }
+                        },
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            if (departmentChart) departmentChart.destroy();
+            departmentChart = new Chart(document.getElementById('departmentChart'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(conteoDepartamentos),
+                    datasets: [{
+                        label: 'Tickets',
+                        data: Object.values(conteoDepartamentos),
+                        backgroundColor: chartColors,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    ...chartOptions,
+                    plugins: {
+                        ...chartOptions.plugins,
+                        title: {
+                            display: true,
+                            text: '🏢 Tickets por Departamento',
+                            color: textColor,
+                            font: { family: 'Inter', size: 16, weight: '700' }
+                        },
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: textColor, font: { size: 9 }, maxRotation: 45 }
+                        }
+                    }
+                }
+            });
+        }
+
+        function generarInforme() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const conteoCategorias = {};
+            const conteoEstados = {};
+            const conteoPrioridades = {};
+            const conteoImpactos = {};
+            const conteoUrgencias = {};
+            const conteoDepartamentos = {};
+            let totalResolutionTime = 0;
+            let closedTickets = 0;
+
+            categorias.forEach(cat => conteoCategorias[cat] = 0);
+            estados.forEach(est => conteoEstados[est] = 0);
+            prioridades.forEach(pri => conteoPrioridades[pri] = 0);
+            impactos.forEach(imp => conteoImpactos[imp] = 0);
+            urgencias.forEach(urg => conteoUrgencias[urg] = 0);
+            departamentos.forEach(dept => conteoDepartamentos[dept] = 0);
+
+            tickets.forEach(t => {
+                conteoCategorias[t.categoria]++;
+                conteoEstados[t.estado]++;
+                conteoPrioridades[t.prioridad]++;
+                conteoImpactos[t.impacto]++;
+                conteoUrgencias[t.urgencia]++;
+                conteoDepartamentos[t.departamento]++;
+                if (t.closed_at) {
+                    closedTickets++;
+                    totalResolutionTime += (t.closed_at - t.created_at) / 3600000;
+                }
+            });
+
+            const avgResolutionTime = closedTickets > 0 ? 
+                (totalResolutionTime / closedTickets).toFixed(2) + ' horas' : 'N/A';
+
+            doc.setFontSize(18);
+            doc.text('Informe de Gestión de Servicios de TI - PNP', 10, 20);
+
+            doc.setFontSize(12);
+            doc.text(`Fecha: ${new Date().toLocaleString('es-ES')}`, 10, 30);
+            doc.text(`Total de Tickets: ${tickets.length}`, 10, 40);
+            doc.text(`Tiempo Promedio de Resolución: ${avgResolutionTime}`, 10, 50);
+
+            doc.setFontSize(14);
+            doc.text('Resumen por Categoría', 10, 60);
+            doc.autoTable({
+                startY: 65,
+                head: [['Categoría', 'Cantidad']],
+                body: Object.entries(conteoCategorias).map(([cat, count]) => [cat, count]),
+            });
+
+            doc.text('Resumen por Estado', 10, doc.lastAutoTable.finalY + 10);
+            doc.autoTable({
+                startY: doc.lastAutoTable.finalY + 15,
+                head: [['Estado', 'Cantidad']],
+                body: Object.entries(conteoEstados).map(([est, count]) => [est, count]),
+            });
+
+            doc.addPage();
+            doc.text('Lista de Tickets', 10, 20);
+            doc.autoTable({
+                startY: 25,
+                head: [['ID', 'Título', 'Categoría', 'Estado', 'Prioridad']],
+                body: tickets.map(t => [t.id, t.titulo, t.categoria, t.estado, t.prioridad]),
+            });
+
+            doc.save(`informe_tickets_pnp_${new Date().toISOString().split('T')[0]}.pdf`);
+            showNotification('📄 Informe PDF generado');
+        }
+
+        document.getElementById('search-input').addEventListener('input', buscarTickets);
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('modal')) {
+                cerrarModal();
+            }
+            if (event.target == document.getElementById('registration-modal')) {
+                closeRegistration();
+            }
+        };
+
+        window.onload = checkLogin;
+    </script>
+</body>
+</html>
